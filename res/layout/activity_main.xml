@@ -1,0 +1,35 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="${relativePackage}.${activityClass}" >
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/hello_world" />
+
+    <Button
+        android:id="@+id/btnConnect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView1"
+        android:layout_marginLeft="21dp"
+        android:layout_marginTop="114dp"
+        android:text="@string/connect"
+        android:onClick="connect"
+         />
+
+    <Button
+        android:id="@+id/btnTakeOffOrLand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btnConnect"
+        android:layout_alignBottom="@+id/btnConnect"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="31dp"
+        android:text="@string/take_off" />
+
+</RelativeLayout>
