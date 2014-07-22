@@ -11,4 +11,4 @@ Get more information about JavaDrone library at https://code.google.com/p/javadr
 - Kazuki Sakai
 - Shinichi Tamura 
 
-With the kind with kind consultancy of Christopher Michael Yap, and the supervision of professor Shigeru Kashihara.
+With the kind consultancy of Christopher Michael Yap and the supervision of professor Shigeru Kashihara.
