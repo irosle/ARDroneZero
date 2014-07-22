@@ -10,5 +10,6 @@ Get more information about JavaDrone library at https://code.google.com/p/javadr
 - Luiz Gustavo Moreira Sampaio
 - Kazuki Sakai
 - Shinichi Tamura 
+- Koudai Fujii
 
 With the kind consultancy of Christopher Michael Yap and the supervision of professor Shigeru Kashihara.
