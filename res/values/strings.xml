@@ -6,5 +6,13 @@
     <string name="connect">Connect</string>
     <string name="take_off">Take Off</string>
     <string name="land">Land</string>
-
+    <string name="turnleft">TurnLeft</string>
+    <string name="turnright">TurnRight</string>
+    <string name="moveFront">Front</string>
+    <string name="moveBack">Back</string>
+    <string name="Rise">Rise</string>
+    <string name="Down">Down</string>
+    <string name="moveLeft">moveLeft</string>
+    <string name="moveRight">moveRight</string>
+    
 </resources>

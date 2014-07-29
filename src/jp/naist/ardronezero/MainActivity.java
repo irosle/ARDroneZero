@@ -34,6 +34,15 @@ public class MainActivity extends Activity {
 	Button btnConnect;
 	Button btnTakeOffOrLand;
 
+	Button btnTurnLeft; //++++++++++++++
+	Button btnTurnRight;
+	Button btnMoveFront;
+	Button btnMoveBack;
+	Button btnRise;
+	Button btnDown;
+	Button btnLeft;
+	Button btnRight;	
+	
 	ControllerThread ctrThread;
 
 	static ARDrone drone;
@@ -48,6 +57,15 @@ public class MainActivity extends Activity {
 		btnTakeOffOrLand = (Button) findViewById(R.id.btnTakeOffOrLand);
 		
 		gestDetect = new GestureDetector(this, new MySimpleOnGestureListener() );
+		
+		btnTurnLeft = (Button) findViewById(R.id.btnTurnLeft); 
+		btnTurnRight= (Button) findViewById(R.id.btnTurnRight);
+		btnMoveFront= (Button) findViewById(R.id.btnMoveFront);
+		btnMoveBack = (Button) findViewById(R.id.btnMoveBack);
+		btnRise		= (Button) findViewById(R.id.btnRise);
+		btnDown		= (Button) findViewById(R.id.btnDown);
+		btnLeft		= (Button) findViewById(R.id.btnMoveLeft);
+		btnRight	= (Button) findViewById(R.id.btnMoveRight);
 	}
 	
 	@Override
@@ -124,6 +142,91 @@ public class MainActivity extends Activity {
 		}
 	}
 
+	
+	public void turnLeft(View view){ //Spin left
+		try{
+			state.setText("Turn Left");
+			drone.move(0f,0f,0f,-10f); 
+		}catch(Exception e){
+			Log.e(TAG, "Faliled to execute Turn Left command", e);
+		}
+		btnTurnLeft.setEnabled(true);
+	}
+
+	public void turnRight(View view){ //右に回転
+		try{
+			state.setText("Turn right");
+			drone.move(0f,0f,0f,10f); 
+		}catch(Exception e){
+			Log.e(TAG, "Faliled to execute Turn Right command", e);
+		}
+		btnTurnRight.setEnabled(true);
+	}
+	
+	public void moveFront(View view){ //前進
+		try{
+			state.setText("Move Front");
+			drone.move(0f,-10f,0f,0f); 
+		}catch(Exception e){
+			Log.e(TAG, "Faliled to execute Move Front command", e);
+		}
+		btnMoveFront.setEnabled(true);
+	}
+	
+	public void moveBack(View view){ //後退
+		try{
+			state.setText("Move Back");
+			drone.move(0f,10f,0f,0f); 
+		}catch(Exception e){
+			Log.e(TAG, "Faliled to execute Move Back command", e);
+		}
+		btnMoveBack.setEnabled(true);
+	}
+
+	public void moveRise(View view){//上昇
+		try{
+			state.setText("Move Rise");
+			drone.move(0f,0f,10f,0f); 
+		}catch(Exception e){
+			Log.e(TAG, "Faliled to execute Move Rise command", e);
+		}
+		btnRise.setEnabled(true);
+	}
+	
+	public void moveDown(View view){//低下
+		try{
+			state.setText("Move Down");
+			drone.move(0f,0f,-10f,0f); 
+		}catch(Exception e){
+			Log.e(TAG, "Faliled to execute Move Down command", e);
+		}
+		btnDown.setEnabled(true);
+	}
+	
+	public void moveLeft(View view){//左に
+		try{
+			state.setText("Move Left");
+			drone.move(-10f,0f,0f,0f); 
+		}catch(Exception e){
+			Log.e(TAG, "Faliled to execute Move Left command", e);
+		}
+		btnLeft.setEnabled(true);
+	}
+	
+	public void moveRight(View view){//右に
+		try{
+			state.setText("Move Right");
+			drone.move(10f,0f,0f,0f); 
+		}catch(Exception e){
+			Log.e(TAG, "Faliled to execute Move Right command", e);
+		}
+		btnRight.setEnabled(true);
+	}
+	
+
+	
+	
+	
 	private class DroneStarter extends AsyncTask<ARDrone, Integer, Boolean> {
 		//飛ぶときの初期設定(connectionなど)
 		@Override

@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     tools:context="${relativePackage}.${activityClass}" >
 
-    <TextView
+<TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -17,11 +17,10 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/textView1"
         android:layout_marginLeft="21dp"
-        android:layout_marginTop="114dp"
+        android:layout_marginTop="30dp"
         android:text="@string/connect"
-        android:onClick="connect"
-         />
-
+        android:onClick="connect"/>
+    
     <Button
         android:id="@+id/btnTakeOffOrLand"
         android:layout_width="wrap_content"
@@ -31,5 +30,92 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="31dp"
         android:text="@string/take_off" />
-
+    
+    <Button
+        android:id="@+id/btnTurnLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/btnConnect"
+        android:layout_marginLeft="21dp"
+        android:layout_marginTop="30dp"
+        android:text="@string/turnleft"
+        android:onClick="turnLeft"/>
+    
+    <Button
+        android:id="@+id/btnTurnRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btnTurnLeft"
+        android:layout_alignBottom="@+id/btnTurnLeft"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="31dp"
+        android:text="@string/turnright"
+        android:onClick="turnRight" />
+    
+    <Button
+        android:id="@+id/btnMoveFront"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/btnTurnLeft"
+        android:layout_marginLeft="21dp"
+        android:layout_marginTop="30dp"
+        android:text="@string/moveFront"
+        android:onClick="moveFront"/>
+    
+    <Button
+        android:id="@+id/btnMoveBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btnMoveFront"
+        android:layout_alignBottom="@+id/btnMoveFront"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="31dp"
+        android:text="@string/moveBack"
+        android:onClick="moveBack" />
+    
+    <Button
+        android:id="@+id/btnRise"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/btnMoveFront"
+        android:layout_marginLeft="21dp"
+        android:layout_marginTop="30dp"
+        android:text="@string/Rise"
+        android:onClick="moveRise"/>
+    
+    <Button
+        android:id="@+id/btnDown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btnRise"
+        android:layout_alignBottom="@+id/btnRise"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="31dp"
+        android:text="@string/Down"
+        android:onClick="moveDown" />
+    
+        <Button
+        android:id="@+id/btnMoveLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/btnRise"
+        android:layout_marginLeft="21dp"
+        android:layout_marginTop="30dp"
+        android:text="@string/moveLeft"
+        android:onClick="moveLeft"/>
+    
+    <Button
+        android:id="@+id/btnMoveRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btnMoveLeft"
+        android:layout_alignBottom="@+id/btnMoveLeft"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="31dp"
+        android:text="@string/moveRight"
+        android:onClick="moveRight" />
 </RelativeLayout>
