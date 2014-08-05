@@ -8,9 +8,8 @@ import android.graphics.Color;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -20,7 +19,6 @@ import com.codeminders.ardrone.ARDrone;
 import com.codeminders.ardrone.ARDrone.State;
 //import jp.naist.ardronelabyrinth.FullscreenActivity;
 //import jp.naist.ardronelabyrinth.FullscreenActivity.DroneStarter;
-
 import com.codeminders.ardrone.ControllerThread;
 
 public class MainActivity extends Activity {
@@ -28,7 +26,8 @@ public class MainActivity extends Activity {
 	private static final long CONNECTION_TIMEOUT = 10000;
 	private static final String TAG = "AR.Drone";
 	
-	private GestureDetector gestDetect;
+	private GestureDetectorCompat mDetector;
+
 
 	TextView state;
 	Button btnConnect;
@@ -43,9 +42,14 @@ public class MainActivity extends Activity {
 	Button btnLeft;
 	Button btnRight;	
 	
+	
+	float speedX = 0.0f;
+	float speedY = 0.0f;
+	
 	ControllerThread ctrThread;
 
 	static ARDrone drone;
+	static ARDroneZeroDroneMove dronemove;//when and where this instance is created? I'll check this after.(2014/8/5 K.S) 
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +60,7 @@ public class MainActivity extends Activity {
 		btnConnect = (Button) findViewById(R.id.btnConnect);
 		btnTakeOffOrLand = (Button) findViewById(R.id.btnTakeOffOrLand);
 		
-		gestDetect = new GestureDetector(this, new MySimpleOnGestureListener() );
+		mDetector = new GestureDetectorCompat(this, new ARDroneZeroGestureListener() );
 		
 		btnTurnLeft = (Button) findViewById(R.id.btnTurnLeft); 
 		btnTurnRight= (Button) findViewById(R.id.btnTurnRight);
@@ -70,23 +74,30 @@ public class MainActivity extends Activity {
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event){//register touch detection
+		//This function starts if user touches display.
 		//TODO Auto-generated method stub
-		gestDetect.onTouchEvent(event);
-		return false;
+		this.mDetector.onTouchEvent(event);
+
+		return true;//Go to gesture Listener Method
+	}
+	
+	public static ARDrone getARDroneInstance(){
+		return drone;//( drone != null) ? drone : null;
 	}
 
 	public void connect(View view) {
 
 		WifiManager connManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 
-		//(new DroneStarter()).execute(MainActivity.drone);//これ消すと飛ぶ、すぐ下で呼んでいるのになぜかここにある?
+		//if comment out this line, drone fly.(The same statement is just following if(). Why this statement is here?)
+		//(new DroneStarter()).execute(MainActivity.drone);
 
 		if (connManager.isWifiEnabled()) {
-			state.setTextColor(Color.RED);//ボタン色変更
+			state.setTextColor(Color.RED);//button color change 
 			state.setText("Connecting..."
-					+ connManager.getConnectionInfo().getSSID());//ボタンに文字列追加
-			btnConnect.setEnabled(false);//ボタンを無効化
-			(new DroneStarter()).execute(MainActivity.drone);//ドローンの始動準備
+					+ connManager.getConnectionInfo().getSSID());//add string the button
+			btnConnect.setEnabled(false);//disable the button
+			(new DroneStarter()).execute(MainActivity.drone);//drone setup
 		} else {
 			//turnOnWifiDialog.show();
 		}
@@ -105,47 +116,48 @@ public class MainActivity extends Activity {
 		}
 
 		if (btnTakeOffOrLand != null) {
-			btnTakeOffOrLand.setVisibility(View.VISIBLE);//ボタンを見えるように
-			btnTakeOffOrLand.setClickable(true);//ボタンが押せる（押したときのボタンの状態が変わる,まだ押しても何も起きない)
-			btnTakeOffOrLand.setEnabled(true);//ボタンが有効化,次のlistenerで、押した時にする動作を決定
-			btnTakeOffOrLand.setOnClickListener(new View.OnClickListener() {//ボタンを押したときの動作を登録
-				public void onClick(View v) {//ボタンを押したときに動作する関数
+			btnTakeOffOrLand.setVisibility(View.VISIBLE);
+			btnTakeOffOrLand.setClickable(true);//enable to push the button(but nothing happened when the button was pushed
+			btnTakeOffOrLand.setEnabled(true);//button is enable, and decide operation on next lister()
+			btnTakeOffOrLand.setOnClickListener(new View.OnClickListener() {//register operation when user push the button
+				public void onClick(View v) {//the function when pushed the button
 
-					if (null == drone || drone.getState() == State.DISCONNECTED) {//通信がされていない
+					if (null == drone || drone.getState() == State.DISCONNECTED) {//if drone has disconnection
 						state.setText("Disconnected");
 						state.setTextColor(Color.RED);
-						btnConnect.setEnabled(true);//connectボタンを有効化
+						btnConnect.setEnabled(true);//we can use connect button
 						return;
 					}
 
 					if (btnTakeOffOrLand.getText().equals(
-							getString(R.string.land))) {//ボタンがland文字列だったら(ボタン文字列比較よりdrone.getState()のような状態を確かめるよウにした方がいいんじゃ?)
+							getString(R.string.land))) {//if button string is "land" (I think comparing drone.state() is more better than comparing string.2014/8/5 K.S
 						try {
 							drone.land();//land
 						} catch (Throwable e) {
 							Log.e(TAG, "Faliled to execute take off command", e);
 						}
 
-						btnTakeOffOrLand.setText(R.string.take_off);//文字列にtake_offを設定
+						btnTakeOffOrLand.setText(R.string.take_off);//set "takeoff" on button string
 					} else {
 						try {
 							drone.clearEmergencySignal();
 							drone.trim();
-							drone.takeOff();//飛翔
+							drone.takeOff();//fly
 						} catch (Throwable e) {
 							Log.e(TAG, "Faliled to execute take off command", e);
 						}
-						btnTakeOffOrLand.setText(R.string.land);//ボタン文字列にlandを設定
+						btnTakeOffOrLand.setText(R.string.land);//set "land" on button string
 					}
 				}
 			});
 		}
 	}
 
-	
 	public void turnLeft(View view){ //Spin left
 		try{
+			//MySimpleOnGestureListener.this.onFling(e1, e2, velocityX, velocityY);
 			state.setText("Turn Left");
+			//float tmp = (vecX > 0) ? -10f : 10f;
 			drone.move(0f,0f,0f,-10f); 
 		}catch(Exception e){
 			Log.e(TAG, "Faliled to execute Turn Left command", e);
@@ -153,7 +165,7 @@ public class MainActivity extends Activity {
 		btnTurnLeft.setEnabled(true);
 	}
 
-	public void turnRight(View view){ //右に回転
+	public void turnRight(View view){ //right spin
 		try{
 			state.setText("Turn right");
 			drone.move(0f,0f,0f,10f); 
@@ -163,7 +175,7 @@ public class MainActivity extends Activity {
 		btnTurnRight.setEnabled(true);
 	}
 	
-	public void moveFront(View view){ //前進
+	public void moveFront(View view){ //go ahead
 		try{
 			state.setText("Move Front");
 			drone.move(0f,-10f,0f,0f); 
@@ -173,7 +185,7 @@ public class MainActivity extends Activity {
 		btnMoveFront.setEnabled(true);
 	}
 	
-	public void moveBack(View view){ //後退
+	public void moveBack(View view){ //back
 		try{
 			state.setText("Move Back");
 			drone.move(0f,10f,0f,0f); 
@@ -183,7 +195,7 @@ public class MainActivity extends Activity {
 		btnMoveBack.setEnabled(true);
 	}
 
-	public void moveRise(View view){//上昇
+	public void moveRise(View view){//move upper direction
 		try{
 			state.setText("Move Rise");
 			drone.move(0f,0f,10f,0f); 
@@ -193,7 +205,7 @@ public class MainActivity extends Activity {
 		btnRise.setEnabled(true);
 	}
 	
-	public void moveDown(View view){//低下
+	public void moveDown(View view){//move under direction
 		try{
 			state.setText("Move Down");
 			drone.move(0f,0f,-10f,0f); 
@@ -203,7 +215,7 @@ public class MainActivity extends Activity {
 		btnDown.setEnabled(true);
 	}
 	
-	public void moveLeft(View view){//左に
+	public void moveLeft(View view){//go to left
 		try{
 			state.setText("Move Left");
 			drone.move(-10f,0f,0f,0f); 
@@ -213,7 +225,7 @@ public class MainActivity extends Activity {
 		btnLeft.setEnabled(true);
 	}
 	
-	public void moveRight(View view){//右に
+	public void moveRight(View view){//go to right
 		try{
 			state.setText("Move Right");
 			drone.move(10f,0f,0f,0f); 
@@ -228,7 +240,7 @@ public class MainActivity extends Activity {
 	
 	
 	private class DroneStarter extends AsyncTask<ARDrone, Integer, Boolean> {
-		//飛ぶときの初期設定(connectionなど)
+		//Initialize if drone fly  (For example, connection)
 		@Override
 		protected Boolean doInBackground(ARDrone... drones) {
 			ARDrone drone = drones[0];
@@ -273,81 +285,6 @@ public class MainActivity extends Activity {
 				 * btnConnect.setEnabled(true);
 				 */
 			}
-		}
-	}
-	
-	//basic gesture class
-	private class MySimpleOnGestureListener extends SimpleOnGestureListener{
-		
-		@Override
-		public boolean onDoubleTap(MotionEvent e){
-			//TODO Auto-generated Method / stab
-			Log.v("onDoubleTap",  "onDoubleTap");
-			return super.onDoubleTap(e);
-		}
-		
-		@Override
-		public boolean onDoubleTapEvent(MotionEvent e){
-			//TODO Auto-generated Method / stab
-			Log.v("onDoubleTapEvent",  "onDoubleTapEvent");
-			return super.onDoubleTapEvent(e);
-		}
-		
-		@Override
-		public boolean onDown(MotionEvent e){
-			//TODO Auto-generated Method / stab
-			Log.v("onDown",  "onDown");
-			return super.onDown(e);
-		}
-		
-
-		@Override
-		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY){
-			//TODO Auto-generated Method / stab
-			//Log.v("onFling",  "X speed: " + (int)velocityX + ", Y speed: " + (int)velocityY);
-			//return super.onFling(e1, e2, velocityX, velocityY);
-			float threshold = 1500;
-			if( Math.abs( (int)velocityX ) > threshold ){//if velocity of X-axis direction  is larger than threshold,  
-				Log.v("onFling",  "X speed: " + (int)velocityX + ", Y speed: " + (int)velocityY);//recognized flip gesture.
-				return super.onFling(e1, e2, velocityX, velocityY);
-			}else{
-				return false;
-			}
-		}
-		
-		@Override
-		public void onLongPress(MotionEvent e){
-			//TODO Auto-generated Method / stab
-			Log.v("onLongPress",  "onLongPress");
-			super.onLongPress(e);
-		}
-		
-		@Override
-		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY){
-			//TODO Auto-generated Method / stab
-			Log.v("onScroll",  "X scroll: " + (int)distanceX + "Y scroll: " + (int)distanceY);
-			return super.onScroll(e1, e2, distanceX, distanceY);
-		}
-		
-		@Override
-		public void onShowPress(MotionEvent e){
-			//TODO Auto-generated Method / stab
-			Log.v("onShowPress",  "onShowPress");
-			super.onShowPress(e);
-		}
-
-		@Override
-		public boolean onSingleTapConfirmed(MotionEvent e){
-			//TODO Auto-generated Method / stab
-			Log.v("onSingleTapConfirmed",  "onSingleTapConfirmed");
-			return super.onSingleTapConfirmed(e);
-		}
-		
-		@Override
-		public boolean onSingleTapUp(MotionEvent e){
-			//TODO Auto-generated Method / stab
-			Log.v("onSingleTapUp",  "onSingleTapUp");
-			return super.onSingleTapUp(e);
 		}
 	}
 }
