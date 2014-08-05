@@ -19,6 +19,7 @@ public class ARDroneZeroDroneMove {
 		if(drone != null){
 			try{
 				Log.e(TAG, "x = " + x);
+				x *= -1f;//change spin direction
 				drone.move(0f,0f,0f,x); 
 			}catch(Exception e){
 				Log.e(TAG, "Faliled to execute Spin command", e);
