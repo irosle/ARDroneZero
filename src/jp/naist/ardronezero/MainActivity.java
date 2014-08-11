@@ -10,9 +10,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.codeminders.ardrone.ARDrone;
@@ -27,6 +31,7 @@ public class MainActivity extends Activity {
 	private static final String TAG = "AR.Drone";
 	
 	private GestureDetectorCompat mDetector;
+	private ARDroneZeroDrawGame mBackView;
 
 
 	TextView state;
@@ -54,14 +59,23 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-
+		mDetector = new GestureDetectorCompat(this, new ARDroneZeroGestureListener() );
+		
+		//Setting View
+		//[0]set layout
+		FrameLayout  frameLayout = new FrameLayout(this);
+		setContentView( frameLayout );
+		
+		//[1]background
+		mBackView = new ARDroneZeroDrawGame(this);		
+		frameLayout.addView( mBackView,
+							new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, //Width
+													   ViewGroup.LayoutParams.WRAP_CONTENT)); // Height
+													   
+		//[2]each button
 		state = (TextView) findViewById(R.id.textView1);
 		btnConnect = (Button) findViewById(R.id.btnConnect);
 		btnTakeOffOrLand = (Button) findViewById(R.id.btnTakeOffOrLand);
-		
-		mDetector = new GestureDetectorCompat(this, new ARDroneZeroGestureListener() );
-		
 		btnTurnLeft = (Button) findViewById(R.id.btnTurnLeft); 
 		btnTurnRight= (Button) findViewById(R.id.btnTurnRight);
 		btnMoveFront= (Button) findViewById(R.id.btnMoveFront);
@@ -70,6 +84,13 @@ public class MainActivity extends Activity {
 		btnDown		= (Button) findViewById(R.id.btnDown);
 		btnLeft		= (Button) findViewById(R.id.btnMoveLeft);
 		btnRight	= (Button) findViewById(R.id.btnMoveRight);
+		RelativeLayout rl;
+		LayoutInflater inf = getLayoutInflater();
+		rl = (RelativeLayout) findViewById(R.layout.activity_main);
+		View btnLayput = inf.inflate(R.layout.activity_main, rl);//get button layout
+		frameLayout.addView(btnLayput, 
+							new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, //Width
+														ViewGroup.LayoutParams.MATCH_PARENT)); // Height
 	}
 	
 	@Override
@@ -153,6 +174,7 @@ public class MainActivity extends Activity {
 		}
 	}
 
+
 	public void turnLeft(View view){ //Spin left
 		try{
 			//MySimpleOnGestureListener.this.onFling(e1, e2, velocityX, velocityY);
@@ -235,10 +257,6 @@ public class MainActivity extends Activity {
 		btnRight.setEnabled(true);
 	}
 	
-
-	
-	
-	
 	private class DroneStarter extends AsyncTask<ARDrone, Integer, Boolean> {
 		//Initialize if drone fly  (For example, connection)
 		@Override
@@ -287,4 +305,24 @@ public class MainActivity extends Activity {
 			}
 		}
 	}
+	
+	/*class BitmapView extends View{
+		Bitmap bitmap;
+		public BitmapView( Context c){
+			super(c);
+			Resources r = c.getResources();
+		
+			bitmap = BitmapFactory.decodeResource(r, R.drawable.dummy_background);
+		}
+		
+		@Override
+		protected void onDraw(Canvas c){
+			c.drawColor(Color.WHITE);
+			Paint p = new Paint();
+		
+			c.drawBitmap(bitmap,  0, 0, p);
+		}
+	}*/
 }
+
+
