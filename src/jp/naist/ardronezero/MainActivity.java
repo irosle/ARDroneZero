@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -51,6 +52,8 @@ public class MainActivity extends Activity {
 	float speedX = 0.0f;
 	float speedY = 0.0f;
 	
+
+	
 	ControllerThread ctrThread;
 
 	static ARDrone drone;
@@ -67,11 +70,13 @@ public class MainActivity extends Activity {
 		setContentView( frameLayout );
 		
 		//[1]background
-		mBackView = new ARDroneZeroDrawGame(this);		
+		mBackView = new ARDroneZeroDrawGame(this);
 		frameLayout.addView( mBackView,
 							new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, //Width
 													   ViewGroup.LayoutParams.WRAP_CONTENT)); // Height
-													   
+		if( !mBackView.loadImage(this) ){
+			Log.e(TAG, "cannot read background image");
+		}
 		//[2]each button
 		state = (TextView) findViewById(R.id.textView1);
 		btnConnect = (Button) findViewById(R.id.btnConnect);
@@ -91,7 +96,13 @@ public class MainActivity extends Activity {
 		frameLayout.addView(btnLayput, 
 							new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, //Width
 														ViewGroup.LayoutParams.MATCH_PARENT)); // Height
+		
+
 	}
+	
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+    }
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event){//register touch detection
@@ -102,6 +113,8 @@ public class MainActivity extends Activity {
 		return true;//Go to gesture Listener Method
 	}
 	
+	
+
 	public static ARDrone getARDroneInstance(){
 		return drone;//( drone != null) ? drone : null;
 	}
